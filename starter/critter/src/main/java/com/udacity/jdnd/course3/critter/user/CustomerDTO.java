@@ -1,6 +1,11 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
+import org.springframework.beans.BeanUtils;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents the form that customer request and response data takes. Does not map
@@ -51,5 +56,24 @@ public class CustomerDTO {
 
     public void setPetIds(List<Long> petIds) {
         this.petIds = petIds;
+    }
+
+    public static CustomerDTO mappingDataFromEntity(Customer entity) {
+        CustomerDTO customerDTO = new CustomerDTO();
+        if (entity != null) {
+            BeanUtils.copyProperties(entity, customerDTO);
+            if (entity.getPets() == null) {
+                customerDTO.setPetIds(Collections.emptyList());
+            } else {
+                customerDTO.setPetIds(entity.getPets().stream().map(Pet::getId).collect(Collectors.toList()));
+            }
+        }
+        return customerDTO;
+    }
+
+    public Customer mappingDataToEntity() {
+        Customer entity = new Customer();
+        BeanUtils.copyProperties(this, entity);
+        return entity;
     }
 }

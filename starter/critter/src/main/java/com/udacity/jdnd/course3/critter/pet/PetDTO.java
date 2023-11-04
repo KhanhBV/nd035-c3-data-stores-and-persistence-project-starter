@@ -1,5 +1,8 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.user.Customer;
+import org.springframework.beans.BeanUtils;
+
 import java.time.LocalDate;
 
 /**
@@ -60,5 +63,27 @@ public class PetDTO {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public static PetDTO mappingDataFromEntity(Pet entity) {
+        PetDTO petDTO = new PetDTO();
+        BeanUtils.copyProperties(entity, petDTO);
+        if (entity.getOwner() == null) {
+            petDTO.setOwnerId(0);
+        } else {
+            petDTO.setOwnerId(entity.getOwner().getId());
+        }
+        return petDTO;
+    }
+
+    public Pet mappingDataToEntity() {
+        Pet newPet = new Pet();
+        BeanUtils.copyProperties(this, newPet);
+        if (this.ownerId != 0) {
+            Customer newCustomer = new Customer();
+            newCustomer.setId(this.ownerId);
+            newPet.setOwner(newCustomer);
+        }
+        return newPet;
     }
 }
